@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import pandas as pd
 import torch
 from sklearn.model_selection import train_test_split
@@ -10,10 +8,11 @@ torch.cuda.empty_cache()
 if __name__ == "__main__":
 
     # path to load the labels and images
-    csv_file = '../All_Data.csv'
-    root_dir = Path().home() / "All_Data"
+    CSV_FILE = '../All_Data.csv'
+    ITERATIONS = 10
+    scores = list()
 
-    labels_df = pd.read_csv(csv_file)
+    labels_df = pd.read_csv(CSV_FILE)
     whole_labels_df_AD = labels_df[labels_df.label == "AD"]
     whole_labels_df_CN = labels_df[labels_df.label == "CN"]
 
@@ -35,13 +34,10 @@ if __name__ == "__main__":
 
     data = labels_df_AD.append(labels_df_CN, ignore_index=True)
 
-    n_iterations = 10
-    scores = list()
-
     train, val_ds = train_test_split(data, test_size=0.1)
 
     # saving train, validation, and test data in csv file for 10 different bootstrap versions.
-    for i in range(n_iterations):
+    for i in range(ITERATIONS):
         train_ds = resample(train, n_samples=len(train))
 
         print("len of train and val and test")
