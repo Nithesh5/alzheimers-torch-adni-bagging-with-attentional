@@ -31,38 +31,18 @@ test_loader = DataLoader(dataset=test_dataset, batch_size=1, shuffle=False, num_
 # checking for device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-# loading all 10 best models
-model1 = ADNI_MODEL(lr=LR, wd=WD).to(device)
-model1.load_state_dict(torch.load('1best_checkpoint_232.model'))  #
+models_list = ['1best_checkpoint_232.model', '2best_checkpoint_113.model', '3best_checkpoint_129.model',
+               '4best_checkpoint_162.model', '5best_checkpoint_108.model', '6best_checkpoint_167.model',
+               '7best_checkpoint_75.model', '8best_checkpoint_217.model', '9best_checkpoint_169.model']
 
-model2 = ADNI_MODEL(lr=LR, wd=WD).to(device)
-model2.load_state_dict(torch.load('2best_checkpoint_113.model'))  #
+models = {}
+for idx, val in enumerate(models_list):
+    modelname = "model_" + str(idx)
+    model = ADNI_MODEL(lr=LR, wd=WD).to(device)
+    model.load_state_dict(torch.load(val))
+    models[modelname] = model
 
-model3 = ADNI_MODEL(lr=LR, wd=WD).to(device)
-model3.load_state_dict(torch.load('3best_checkpoint_129.model'))  #
-
-model4 = ADNI_MODEL(lr=LR, wd=WD).to(device)
-model4.load_state_dict(torch.load('4best_checkpoint_162.model'))  #
-
-model5 = ADNI_MODEL(lr=LR, wd=WD).to(device)
-model5.load_state_dict(torch.load('5best_checkpoint_108.model'))  #
-
-model6 = ADNI_MODEL(lr=LR, wd=WD).to(device)
-model6.load_state_dict(torch.load('6best_checkpoint_167.model'))  #
-
-model7 = ADNI_MODEL(lr=LR, wd=WD).to(device)
-model7.load_state_dict(torch.load('7best_checkpoint_75.model'))  #
-
-model8 = ADNI_MODEL(lr=LR, wd=WD).to(device)
-model8.load_state_dict(torch.load('8best_checkpoint_217.model'))  #
-
-model9 = ADNI_MODEL(lr=LR, wd=WD).to(device)
-model9.load_state_dict(torch.load('9best_checkpoint_169.model'))  #
-
-models = [model1, model2, model3, model4, model5, model6, model7, model8, model9]
-
-# model testing
-for x in models:
+for x in models.values():
     x.eval()
 
 actual_label = []
@@ -82,7 +62,7 @@ with torch.no_grad():
             images = images.cuda()
             labels = labels.cuda()
 
-        for x in models:
+        for x in models.values():
             outputs.append(x(images))
 
         for x in outputs:
@@ -94,7 +74,6 @@ with torch.no_grad():
 
         index1 = labels.cpu().data.numpy()
         actual_label.append(index1)
-        print("in")
         predicted_label.append(output_mode.cpu().data.numpy())
         test_accuracy += int(torch.sum(output_mode == labels.data))
 
