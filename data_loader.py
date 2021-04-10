@@ -73,19 +73,15 @@ def train_val_test_loaders(train_file: str = '',
                            val_file: str = '',
                            test_file: str = '',
                            root_dir: str = '',
-                           train_batch: int = 2,
+                           train_batch: int = 4,
                            test_batch: int = 1,
-                           train_workers: int = 2,
-                           test_workers: int = 0
+                           train_workers: int = 4,
+                           test_workers: int = 1
                            ) -> Tuple[DataLoader, DataLoader, DataLoader]:
     # dataset
     train_ds = pd.read_csv(train_file)
     val_ds = pd.read_csv(val_file)
     test_ds = pd.read_csv(test_file)
-
-    train_ds = train_ds.iloc[1:11, :]
-    val_ds = val_ds.iloc[1:11, :]
-    test_ds = test_ds.iloc[1:11, :]
 
     print("len of train and val and test")
     print(len(train_ds), len(val_ds), len(test_ds))

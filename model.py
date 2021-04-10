@@ -5,6 +5,9 @@ from torch.optim import Adam
 from torch.utils.data import DataLoader
 
 
+# This code is implemented based on following paper
+# https://www.frontiersin.org/articles/10.3389/fnagi.2019.00194/full
+
 class ADNI_MODEL(nn.Module):
     def __init__(self, lr: float = None, wd: float = None):
         nn.Module.__init__(self)
@@ -51,8 +54,7 @@ class ADNI_MODEL(nn.Module):
         x = self.sigmoid(x)
         return x
 
-    def train_and_validate(self, train_loader: DataLoader, val_loader: DataLoader, epochs: int, job_id : int):
-
+    def train_and_validate(self, train_loader: DataLoader, val_loader: DataLoader, epochs: int, job_id: int):
         for epoch in range(epochs):
             # training on training dataset
             train_accuracy, train_loss = self.train_on_data(train_loader)
@@ -117,7 +119,6 @@ class ADNI_MODEL(nn.Module):
                 labels = labels.cuda()
                 loss = F.binary_cross_entropy(outputs, labels)
                 val_loss += loss.cpu().data * images.size(0)
-
                 preds = torch.round(outputs)
                 val_accuracy += int(torch.sum(preds.data == labels.data))
 
@@ -144,7 +145,6 @@ class ADNI_MODEL(nn.Module):
                 outputs = outputs.reshape(-1)
                 outputs = outputs.type(torch.FloatTensor)
                 outputs = outputs.cuda()
-
                 outputs = torch.round(outputs)
                 index1 = labels.cpu().data.numpy()
                 actual_label.append(index1)
@@ -159,24 +159,25 @@ class ADNI_MODEL(nn.Module):
         print(predicted_label)
         return actual_label, predicted_label
 
+
+# This code is implemented based on following paper
+# https://arxiv.org/abs/1807.06521
+# Refered code from https://github.com/JYPark09/CBAM-PyTorch
+
 class ResBlock(nn.Module):
     def __init__(self, channel: int, ratio=4):
         super(ResBlock, self).__init__()
-
         self.conv_lower = nn.Sequential(
             nn.Conv3d(channel, channel, 3, padding=1, bias=False),
             nn.BatchNorm3d(channel),
             nn.ReLU(inplace=True)
         )
-
         self.conv_upper = nn.Sequential(
             nn.Conv3d(channel, channel, 3, padding=1, bias=False),
             nn.BatchNorm3d(channel)
         )
-
         self.ca = ChannelAttention(channel, ratio)
         self.sa = SpatialAttention()
-
         self.relu = nn.ReLU(inplace=True)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -184,44 +185,35 @@ class ResBlock(nn.Module):
         path = self.conv_upper(path)
         path = self.ca(path) * path
         path = self.sa(path) * path
-
         return self.relu(path + x)
 
 
 class ChannelAttention(nn.Module):
     def __init__(self, channel: int, ratio: int):
         super(ChannelAttention, self).__init__()
-
         self.shared_mlp = nn.Sequential(
             nn.Conv3d(channel, channel // ratio, 1, padding=0, bias=False),  # channel // ratio
             nn.ReLU(inplace=True),
             nn.Conv3d(channel // ratio, channel, 1, padding=0, bias=False)  # channel // ratio
         )
-
         self.avg_pool = nn.AdaptiveAvgPool3d(1)
         self.max_pool = nn.AdaptiveMaxPool3d(1)
-
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         feat_avg = self.shared_mlp(self.avg_pool(x))
         feat_max = self.shared_mlp(self.max_pool(x))
-
         return self.sigmoid(feat_avg + feat_max)
 
 
 class SpatialAttention(nn.Module):
     def __init__(self):
         super(SpatialAttention, self).__init__()
-
         self.conv = nn.Conv3d(2, 1, 7, padding=3, bias=False)
-
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         feat_avg = torch.mean(x, dim=1, keepdim=True)
         feat_max = torch.max(x, dim=1, keepdim=True)[0]
-
         feature = torch.cat((feat_avg, feat_max), dim=1)
-
         return self.sigmoid(self.conv(feature))

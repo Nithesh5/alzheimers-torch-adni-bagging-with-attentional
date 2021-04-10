@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pandas as pd
 import torch
 from sklearn.model_selection import train_test_split
@@ -9,7 +11,7 @@ if __name__ == "__main__":
 
     # path to load the labels and images
     csv_file = '../All_Data.csv'
-    root_dir = r'C:\StFX\Project\All_Files_Classified\All_Data' #Path().home()
+    root_dir = Path().home() / "All_Data"
 
     labels_df = pd.read_csv(csv_file)
     whole_labels_df_AD = labels_df[labels_df.label == "AD"]

@@ -94,7 +94,7 @@ with torch.no_grad():
 
         index1 = labels.cpu().data.numpy()
         actual_label.append(index1)
-
+        print("in")
         predicted_label.append(output_mode.cpu().data.numpy())
         test_accuracy += int(torch.sum(output_mode == labels.data))
 
@@ -112,5 +112,3 @@ plt.show()
 fpr, tpr, _ = roc_curve(actual_label, predicted_label)
 roc_display = RocCurveDisplay(fpr=fpr, tpr=tpr).plot()
 plt.show()
-
-print("done")

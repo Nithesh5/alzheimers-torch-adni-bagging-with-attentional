@@ -7,35 +7,29 @@ from adni.model import ADNI_MODEL
 torch.cuda.empty_cache()
 import sys
 
-# This code is implemented based on following paper
-# https://www.frontiersin.org/articles/10.3389/fnagi.2019.00194/full
+"""
+Base model is implemented based on following paper
+https://arxiv.org/abs/1807.06521
+Attentional layers are implemented based on following paper
+https://www.frontiersin.org/articles/10.3389/fnagi.2019.00194/full
+"""
 
 if __name__ == "__main__":
     print(sys.argv)
-    print(f'Script Name is {sys.argv[0]}')
 
-    JOB_ID = '2' #sys.argv[1]
-    ROOT_DIR = r'C:\StFX\Project\All_Files_Classified\All_Data' #r'/home/nithesh/ADNI/dataset/All_Data/'
-    TRAIN_BATCH = 1  # 4
+    JOB_ID = sys.argv[1]
+    ROOT_DIR = r'/home/nithesh/ADNI/dataset/All_Data/'
+    TRAIN_BATCH = 4
     TEST_BATCH = 1
-    TRAIN_WORKERS = 0  # 4
+    TRAIN_WORKERS = 4
     TEST_WORKERS = 0
     LR = 1e-4
     WD = 1e-4
-    EPOCHS = 3  # 600
+    EPOCHS = 600
 
-    """
-    TRAIN_FILE = '/home/nithesh/ADNI/dataset/bagging_new/' + sys.argv[
-        1] + 'train_ds_new.csv'  # '/home/nithesh/ADNI/dataset/bagging_new/1train_ds_new.csv'
-    VAL_FILE = '/home/nithesh/ADNI/dataset/bagging_new/' + sys.argv[
-        1] + 'val_ds_new.csv'  # '/home/nithesh/ADNI/dataset/bagging_new/1val_ds_new.csv'
-    TEST_FILE = '/home/nithesh/ADNI/dataset/bagging_new/' + sys.argv[
-        1] + 'test_ds_new.csv'  # '/home/nithesh/ADNI/dataset/bagging_new/1test_ds_new.csv'
-    """
-
-    TRAIN_FILE = '0train_ds_new.csv'
-    VAL_FILE = '0val_ds_new.csv'
-    TEST_FILE = '0test_ds_new.csv'
+    TRAIN_FILE = '/home/nithesh/ADNI/dataset/bagging_new/' + JOB_ID + 'train_ds_new.csv'
+    VAL_FILE = '/home/nithesh/ADNI/dataset/bagging_new/' + JOB_ID + 'val_ds_new.csv'
+    TEST_FILE = '/home/nithesh/ADNI/dataset/bagging_new/' + JOB_ID + 'test_ds_new.csv'
 
     train_loader, val_loader, test_loader = train_val_test_loaders(train_file=TRAIN_FILE,
                                                                    val_file=VAL_FILE,
