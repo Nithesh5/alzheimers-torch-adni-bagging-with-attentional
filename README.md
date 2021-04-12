@@ -6,3 +6,6 @@ In this CNN model, I have added attention layers and also included bagging techn
 
 Model architecture refered from https://www.frontiersin.org/articles/10.3389/fnagi.2019.00194/full research paper.
 Attentional layers refered from https://www.frontiersin.org/articles/10.3389/fnagi.2019.00194/full.
+
+
+Starting file is main.py
