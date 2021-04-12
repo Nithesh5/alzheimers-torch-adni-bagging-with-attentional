@@ -8,7 +8,7 @@ torch.cuda.empty_cache()
 import sys
 
 """
-Base model is implemented based on following paper
+only base model is implemented based on following paper
 https://arxiv.org/abs/1807.06521
 Attentional layers are implemented based on following paper
 https://www.frontiersin.org/articles/10.3389/fnagi.2019.00194/full
