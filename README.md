@@ -1,4 +1,4 @@
-# ADNI classification model. ( Bagging and Attentional Layers)
+# ADNI classification model. ( With Bagging and Attentional Layers)
 
 Alzheimer's disease classification. MRI data downloaded  from 'http://adni.loni.usc.edu/' site. 
 
