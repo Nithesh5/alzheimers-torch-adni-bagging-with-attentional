@@ -1,3 +1,6 @@
+from typing import Dict, List
+
+import matplotlib.pyplot as plt
 import torch
 import torch.nn.functional as F
 from torch import nn
@@ -5,7 +8,7 @@ from torch.optim import Adam
 from torch.utils.data import DataLoader
 
 
-# This code is implemented based on following paper
+# This model code is implemented based on following paper
 # https://www.frontiersin.org/articles/10.3389/fnagi.2019.00194/full
 
 class ADNI_MODEL(nn.Module):
@@ -55,6 +58,12 @@ class ADNI_MODEL(nn.Module):
         return x
 
     def train_and_validate(self, train_loader: DataLoader, val_loader: DataLoader, epochs: int, job_id: int):
+        history: Dict[str, List] = {}
+        t_acc = []
+        t_loss = []
+        v_acc = []
+        v_loss = []
+
         for epoch in range(epochs):
             # training on training dataset
             train_accuracy, train_loss = self.train_on_data(train_loader)
@@ -66,9 +75,30 @@ class ADNI_MODEL(nn.Module):
             if (val_accuracy >= 0.96):
                 torch.save(self.state_dict(), job_id + 'best_checkpoint_' + str(epoch) + '.model')
 
+            t_acc.append(train_accuracy)
+            t_loss.append(train_loss)
+            v_acc.append(val_accuracy)
+            v_loss.append(val_loss)
+
             print('Epoch: ' + str(epoch) + ' Train Loss: ' + str(train_loss) + ' Val Loss: ' + str(
                 val_loss) + ' Train Accuracy: ' + str(
                 train_accuracy) + ' Val Accuracy: ' + str(val_accuracy))
+
+        history["train_acc"] = t_acc
+        history["train_loss"] = t_loss
+        history["val_acc"] = v_acc
+        history["val_loss"] = v_loss
+        return history
+
+    def drow_acc_plot(self, history):
+        print("plotting")
+        plt.plot(history["train_acc"])
+        plt.plot(history["val_acc"])
+        plt.title('model accuracy')
+        plt.ylabel('accuracy')
+        plt.xlabel('epoch')
+        plt.legend(['train', 'test'], loc='upper left')
+        plt.show()
 
     def train_on_data(self, train_loader: DataLoader):
         self.train()
@@ -160,7 +190,7 @@ class ADNI_MODEL(nn.Module):
         return actual_label, predicted_label
 
 
-# This code is implemented based on following paper
+# This model code is implemented based on following paper
 # https://arxiv.org/abs/1807.06521
 # Refered code from https://github.com/JYPark09/CBAM-PyTorch
 
@@ -192,9 +222,9 @@ class ChannelAttention(nn.Module):
     def __init__(self, channel: int, ratio: int):
         super(ChannelAttention, self).__init__()
         self.shared_mlp = nn.Sequential(
-            nn.Conv3d(channel, channel // ratio, 1, padding=0, bias=False),  # channel // ratio
+            nn.Conv3d(channel, channel // ratio, 1, padding=0, bias=False),
             nn.ReLU(inplace=True),
-            nn.Conv3d(channel // ratio, channel, 1, padding=0, bias=False)  # channel // ratio
+            nn.Conv3d(channel // ratio, channel, 1, padding=0, bias=False)
         )
         self.avg_pool = nn.AdaptiveAvgPool3d(1)
         self.max_pool = nn.AdaptiveMaxPool3d(1)

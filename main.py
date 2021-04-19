@@ -8,7 +8,7 @@ torch.cuda.empty_cache()
 import sys
 
 """
-only base model is implemented based on following paper
+Base model is implemented based on following paper
 https://arxiv.org/abs/1807.06521
 Attentional layers are implemented based on following paper
 https://www.frontiersin.org/articles/10.3389/fnagi.2019.00194/full
@@ -47,10 +47,12 @@ if __name__ == "__main__":
     model = ADNI_MODEL(lr=LR, wd=WD).to(device)
     print("model defined")
 
-    model.train_and_validate(train_loader=train_loader, val_loader=val_loader, epochs=EPOCHS, job_id=JOB_ID)
+    history = model.train_and_validate(train_loader=train_loader, val_loader=val_loader, epochs=EPOCHS, job_id=JOB_ID)
     actual_label, predicted_label = model.test_on_data(test_loader)
     confusion = confusion_matrix(actual_label, predicted_label)
     print(confusion)
+
+    model.drow_acc_plot(history)
 
     torch.save(model.state_dict(), JOB_ID + 'final_best_checkpoint.model')
     print("model saved")
