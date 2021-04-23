@@ -8,8 +8,8 @@ from sklearn.metrics import confusion_matrix
 from sklearn.metrics import roc_curve
 from torch.utils.data import DataLoader
 
-from adni.data_loader import ADNIDataloaderAllData
-from adni.model import ADNI_MODEL
+from data_loader import ADNIDataloaderAllData
+from model import ADNI_MODEL
 
 TEST_FILE = '0test_ds_new.csv'
 ROOT_DIR = r'C:\StFX\Project\All_Files_Classified\All_Data'
@@ -33,7 +33,8 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 models_list = ['1best_checkpoint_232.model', '2best_checkpoint_113.model', '3best_checkpoint_129.model',
                '4best_checkpoint_162.model', '5best_checkpoint_108.model', '6best_checkpoint_167.model',
-               '7best_checkpoint_75.model', '8best_checkpoint_217.model', '9best_checkpoint_169.model']
+               '7best_checkpoint_75.model', '8best_checkpoint_217.model', '9best_checkpoint_169.model',
+               '10best_checkpoint_102.model']
 
 models = {}
 for idx, val in enumerate(models_list):

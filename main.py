@@ -1,8 +1,8 @@
 import torch
 from sklearn.metrics import confusion_matrix
 
-from adni.data_loader import train_val_test_loaders
-from adni.model import ADNI_MODEL
+from data_loader import train_val_test_loaders
+from model import ADNI_MODEL
 
 torch.cuda.empty_cache()
 import sys

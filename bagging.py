@@ -23,6 +23,7 @@ if __name__ == "__main__":
     whole_labels_df_CN = whole_labels_df_CN.sample(frac=1, random_state=5)
     whole_labels_df_CN = whole_labels_df_CN.reset_index(drop=True)
 
+    #taking 100 images for final testing
     # Test dataset
     test_labels_df_AD = whole_labels_df_AD.iloc[0:50, :]  # 420:471
     test_labels_df_CN = whole_labels_df_CN.iloc[0:50, :]
@@ -30,10 +31,11 @@ if __name__ == "__main__":
 
     # Train dataset
     labels_df_AD = whole_labels_df_AD.iloc[50:471, :]  # 0:420
-    labels_df_CN = whole_labels_df_CN.iloc[50:650, :]
+    labels_df_CN = whole_labels_df_CN.iloc[50:471, :]
 
     data = labels_df_AD.append(labels_df_CN, ignore_index=True)
 
+    #dividing remaining data into train and split
     train, val_ds = train_test_split(data, test_size=0.1)
 
     # saving train, validation, and test data in csv file for 10 different bootstrap versions.

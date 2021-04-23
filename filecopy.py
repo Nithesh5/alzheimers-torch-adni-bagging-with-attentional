@@ -24,7 +24,7 @@ def split_subject_files() -> None:
         os.chdir(str(ADNI_DIR))
         shutil.copytree(subject, SPLIT_DIR / subject)
 
-
+# refered this code from https://stackoverflow.com/questions/59207743/using-os-walk-with-passing-a-variable/59208776#59208776
 def copy_nii_info() -> None:
     """This code is used to take all the .nii files from subfolders recursively and copy them in new
     destination folder and also make entry in csv file for further uses"""
@@ -37,8 +37,8 @@ def copy_nii_info() -> None:
             for file in files:
                 print(file)
                 writer.writerow([file, LABEL])
-                path_file = os.path.join(root, file)
-                shutil.copy2(path_file, NII_OUT)
+                path = os.path.join(root, file)
+                shutil.copy2(path, NII_OUT)
 
 
 if __name__ == "__main__":
